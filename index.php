@@ -1,256 +1,162 @@
 <?php
-//PHP Framework for Boxes //uv = uservariable
-
-$runTHIS = $_POST['functionToRun'];
-$argsToRun = split(', ', $_POST['argToRun']);
-
-#Run function via JS //DO NOT USE IN FINAL PRODUCT
-function runPost($toRun, $argsToRun) {
-    call_user_func_array($toRun, $argsToRun);
-    }
-
-//*********USERS - login logout************//
-//Very basic -- ones later functions use
-function mySQLConnect() {
-    //establishes mySQL connection to the database
-    mysql_connect("localhost","root","");
-    mysql_select_db("Boxes");
-    }
-
-function isitEmail($email) {
-    //check if email is valid
-    return (filter_var($email, FILTER_VALIDATE_EMAIL)) ? true : false;
-    //this is known for problems, but we shall see if we have any.
-    }
-
-function hashPassword($passtoHash) {
-    //this is where a has formula will be created;
-    return $passtoHash;
-    }
-
-function usernameCheck($usernameUV) { //FIX CASE SENSITIVITY
-    //checks if the username given is in our database.
-    mySQLConnect();
-    
-    
-    $usernameUV = mysql_real_escape_string(trim($usernameUV));
-    $query = mysql_query("SELECT * FROM users WHERE UserName='$usernameUV'");
-    $numrows = mysql_num_rows($query);
-
-    return ($numrows == 1) ? true : false;
-    
-    mysql_close();
-    }
-
-function getUsername($ID) {
-    mySQLConnect();
-    $query = mysql_query("SELECT * FROM users WHERE ID='$ID'");
-    $numrows = mysql_num_rows($query);
-    $row = mysql_fetch_assoc($query);
-    $dbUser = $row['UserName'];
-        mysql_close();
-    return $dbUser;
-    }
-
-function userIDFind($userUV, $emailORname) {
-    mySQLConnect();
-    if ($emailORname == 0) { //username
-        $userUV = mysql_real_escape_string(trim($userUV));
-        $query = mysql_query("SELECT * FROM users WHERE UserName='$userUV'");
-        $numrows = mysql_num_rows($query);
-        $row = mysql_fetch_assoc($query);
-        $dbID = $row['ID'];
-            mysql_close();
-        return $dbID;
-        }
-    else { //email
-        $userUV = mysql_real_escape_string(trim($userUV));
-        $query = mysql_query("SELECT * FROM users WHERE email='$userUV'");
-        $numrows = mysql_num_rows($query);
-        $row = mysql_fetch_assoc($query);
-        $dbID = $row['ID'];
-            mysql_close();
-        return $dbID;
-        }
-    }
-
-function useremailCheck($emailUV) { //FIX CASE SENSIVITY
-    if (isitEmail($emailUV) == false) return "Invalid Email";
-    mySQLConnect();
-    
-    $emailUV = mysql_real_escape_string(trim($emailUV));
-    $query = mysql_query("SELECT * FROM users WHERE email='$emailUV'");
-    $numrows = mysql_num_rows($query);
-    
-    return ($numrows == 1) ? true : false;
-    
-    mysql_close();
-    }
-
-function userpasswordCheck($userID, $userpassUV) {
-    mySQLConnect();
-    
-    $userpassUV = mysql_real_escape_string(trim($userpassUV));
-    $query = mysql_query("SELECT * FROM users WHERE ID='$userID'");
-    $numrows = mysql_num_rows($query);
-    
-    if ($numrows != 1) return $GLOBALS['errormessage'];
-    
-    $row = mysql_fetch_assoc($query);
-    $dbid = $row['ID'];
-    $dbpass = $row['password'];
-    $dbsalt = $row['salt'];
-
-    $userpassUV = hashPassword($dbsalt . $userpassUV . $dbsalt);
-    
-    return ($userpassUV == $dbpass) ? true : false;
-
-    mysql_close();
-    }
-
-function userLoginType($userINUV) {
-	//false is email; true is username.
-	return (isitEmail($userINUV) == true) ? false : true;
-	}
-
-function userLogin($usernameUV, $passwordUV) {
-	$usernameORemail = (userLoginType($usernameUV) == true) ? true : false;
-	if ($usernameORemail == true) {
-		if (usernameCheck($usernameUV) == true) {
-            $userID = userIDFind($usernameUV, 0);
-			if (userpasswordCheck($userID, $passwordUV) == true) {
-				echo "Logged in $userID"; //SESSION START exd…
-                $_SESSION['userid'] = $userID;
-                $_SESSION['username'] = getUsername($userID);
-				}
-			else echo "username password wrong";
-			}
-		else print "username is not there";
-		}
-	else {
-		if (useremailCheck($usernameUV) == true) {
-            $userID = userIDFind($usernameUV, 1);
-			if (userpasswordCheck($userID, $passwordUV) == true) {
-                echo "Logged in $userID";
-                $_SESSION['userid'] = $userID;
-                $_SESSION['username'] = getUsername($userID);
-				}
-			else echo "Email's Password Wrong";
-			}
-        else echo "Email is not there";
-		}
-	}
-
-function userLogout() {
+    error_reporting (E_ALL ^ E_NOTICE);
+#Login if possible
     session_start();
-    session_destroy();
-    }
-
-function createUserFileDir($userID) {
-    if (file_exists("_users/$userID") == true) {
-        echo "Yes";
-        return;
-        }
-    else {
-        echo "No";
-        mkdir("_users/$userID");
-        chmod("_users/$userID", 0777);
-        $fileName = "_users/$userID/posts.boxes";
-        $fileHandle = fopen($fileName, 'w') or die("cannot open file");
-        fclose($fileHandle);
-        echo (file_exists("_users/$userID")) ? "Yes" : "No";
-        }
-    }
-
-function passwordMatch($passOne, $passTwo) {
-    return ($passOne === $passTwo) ? true : false;
-    }
-
-function generateSalt($length) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, strlen($characters) - 1)];
-        }
-    return $randomString;
-    }
-
-function currentDateTime() {
-    date_default_timezone_set('America/Chicago'); // CDT
+    $userid = $_SESSION['userid'];
+    $username = $_SESSION['username'];
+    if ((!$userid) || ($userid == null)) $sessionON = false;
+    else $sessionON = true;
     
-    $current_date = date('Y-m-d H:i:s');
-    
-    return $current_date;
-    }
-
-function registerNewUser($firstName, $middleName, $lastName, $usernameUV, $userRealNameUV, $passwordUV, $passwordTwoUV, $emailUV) {
-    if (!isset($firstName)) echo "Please enter your first name.";
-
-    #Middle name NOT requried.
-
-    else if (!isset($lastName)) echo "Please enter your last name.";
-    
-    else if (!isset($usernameUV)) echo "Please enter your username.";
-
-    else if (!isset($passwordUV)) echo "Please enter your password.";
-
-    else if (!isset($passwordTwoUV)) echo "Please confrim your password.";
-
-    else if (!isset($emailUV)) echo "Please enter your email.";
-    #Done checking for if set
-    
-    else if (usernameCheck($usernameUV) == true) echo "Sorry sombody else already has that username.";
-
-    else if (passwordMatch($passwordUV, $passwordTwoUV) == false) echo "Passwords do not match.";
-
-    else if (useremailCheck($emailUV) == true) echo "Sorry someone is already using that email."; #Recover password?
-
-    else {
-        if (($userRealNameUV == true) || ($userRealNameUV == 1)) $userRealNameUV = true;
-        else $userRealNameUV = 0;
-        
-        $salt = generateSalt(10);
-        $passwordSet = hashPassword($salt . $passwordUV . $salt);
-        
-        $passwordSet = mysql_real_escape_string(trim($passwordSet));
-        $firstName = mysql_real_escape_string(trim($firstName));
-        if ($middleName) $middleName = mysql_real_escape_string(trim($middleName));
-        $lastName = mysql_real_escape_string(trim($lastName));
-        $usernameUV = mysql_real_escape_string(trim($usernameUV));
-        $passwordUV = mysql_real_escape_string(trim($passwordUV));
-        $emailUV = mysql_real_escape_string(trim($emailUV));
-        $dateTime = currentDateTime();
-        mySQLConnect();
-            mysql_query("INSERT INTO users VALUES ('','$usernameUV', '$userRealNameUV','$passwordSet','$salt','$emailUV','0','$firstName','$middleName','$lastName','$dateTime')");
-        mysql_close();
-        
-        // createUserFileDir(userIDFind($usernameUV, 0));
-        }
-    }
-
-runPost($runTHIS, $argsToRun);
-?>
-
-
+    ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>Boxes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="title" content="Boxes" />
+		<meta name="description" content="An whole new social network :: BETA!" />
+		<meta name="Keywords" content="Social Network, new, Boxes" />
+        
+        <link href="http://fonts.googleapis.com/css?family=Nova+Square" rel="stylesheet" type="text/css" />
+        <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css" />
+        
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <!--<meta name="apple-mobile-web-app-status-bar-style" content="default" />-->
+
+        <!--iPhone (60x60)-->
+        <link rel="apple-touch-icon" href="./images/web-app/touch-icon-iphone.png" />
+        <!--iPad-->
+        <link rel="apple-touch-icon" sizes="76x76" href="./images/web-app/touch-icon-ipad.png" />
+        <!--iPhone (Retina)-->
+        <link rel="apple-touch-icon" sizes="120x120" href="./images/web-app/touch-icon-iphone-retina.png" />
+        <!--iPad (Retina)-->
+        <link rel="apple-touch-icon" sizes="152x152" href="./images/web-app/touch-icon-ipad-retina.png" />
+        <!-- iPhone -->
+        <link href="./images/web-app/apple-touch-startup-image-320x460.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image" />
+        <!-- iPhone (Retina) -->
+        <link href="./images/web-app/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+        <!-- iPhone 5 -->
+        <link href="./images/web-app/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+        <!-- iPad (portrait) -->
+        <link href="./images/web-app/apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image" />
+        <!-- iPad (landscape) -->
+        <link href="./images/web-app/apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image" />
+        <!-- iPad (Retina, portrait) -->
+        <link href="./images/web-app/apple-touch-startup-image-1536x2008.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+        <!-- iPad (Retina, landscape) -->
+        <link href="./images/web-app/apple-touch-startup-image-1496x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+
+
+
+
+		<!--<meta name="revisit-after" content="7 days" />
+        <meta name="google-site-verification" content="" />-->
+        <?    if ($sessionON == true) echo '<meta http-equiv="refresh" content="0;URL=./Home.php" />'; ?>
+        
+        
+        <link rel="stylesheet" type="text/css" href="./CSS/Core.css" />
+        <link rel="stylesheet" type="text/css" media="(max-width: 480px)" href="./CSS/Mobile.css" />
+        <link rel="stylesheet" type="text/css" media="(max-width: 980px) and (min-width: 480px)" href="./CSS/Tablet.css" />
+        <link rel="stylesheet" type="text/css" media="(min-width: 980px)" href="./CSS/Full.css" />
+        <link rel="Shortcut Icon" type="image/x-icon" href="./images/favicon.ico" />
+        
+        <script type="text/JavaScript" src="./JavaScript/jQuery.js"></script>
+        <script type="text/JavaScript" src="./JavaScript/framework.js"></script>
+        <script type="text/JavaScript" src="./JavaScript/documentChanges.js"></script>
     </head>
     <body>
-        <form action="./" method="POST">
-            <input name="functionToRun" id="functionToRun" type="text" placeholder="Function Name" />
-            <input name="argToRun" id="argToRun" type="text" placeholder="args" />
-            <input type="submit" />
-        </form>
-        <span id="count"></span>
-        <textarea onKeyUp="charCount();" id="textCount"></textarea>
-        <script type="text/javascript">
-            function charCount() {
-                var fullString = document.getElementById('textCount').value;
-                var splitString = fullString.split('');
-                document.getElementById('count').innerHTML = splitString.length;
-                }
-            </script>
+        <!--Images upload <input type="file" accept="image/*" />-->
+        <div id="wrapper">
+            <header>
+                    <span id="hSettings"><div id="hGear"><a id="hGearLink" href="#settings"></a></div></span>
+                    <input id="searchBuddies" type="text" placeholder="Find your buddies..." />
+                    <span id="htitle"><div id="boxesGUILogo"><a href="#top" id="boxesGUILink"></a></div></span>
+                    <span class="clear_both"></span>
+            </header>
+            <div id="article">
+                <div id="boxIndex1" class="boxWrapper">
+                    <div id="boxIndex1_Header"class="boxHeader">
+                        <span id="boxIndex1_Header_Date" class="boxHeaderDate"></span>
+                        <span id="boxIndex1_Header_User" class="boxHeaderUser">Welcome to Boxes!</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndex1_Content" class="boxContent">
+                        Hello! It is wonderful to see you here!<br /><br />Boxes is currently is alpha testing. Which means that you have a chance to directly effect its future! Suggest ideas and give feedback! The more you use Boxes now; the better it can get!
+                    </div>
+                </div>
+                <div id="Login" class="boxWrapper">
+                    <div id="boxIndex2_Header"class="boxHeader">
+                        <span id="boxIndex2_Header_Date" class="boxHeaderDate"></span>
+                        <span id="boxIndex2_Header_User" class="boxHeaderUser">Please Login</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndex2_Content" class="boxContent">
+                        <form id="loginInputWrapper" action="./Login.php" method="POST">
+                            <input id="loginUsername" name="loginUsername" type="text" placeholder="Your Username..." />
+                            <input id="loginPassword" name="loginPassword" type="password" placeholder="Your Password..." />
+                            <input id="loginSubmit" name="loginSubmit" class="submit" type="submit" />
+                        </form>
+                    </div>
+                </div>
+                <div id="Register" class="boxWrapper">
+                    <div id="boxIndex3_Header"class="boxHeader">
+                        <span id="boxIndex3_Header_Date" class="boxHeaderDate">or</span>
+                        <span id="boxIndex3_Header_User" class="boxHeaderUser">Please Register</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndex3_Content" class="boxContent">
+                        <form id="registerInputWrapper" action="./Register.php" method="POST">
+                            <span class="requiredInput"><input id="registerFName" name="registerFName" type="text" placeholder="Your First Name..." onBlur="registerNameCheck('F');" /></span>
+                            <input id="registerMName" name="registerMName" type="text" placeholder="Your Middle Name..." />
+                            <span class="requiredInput"><input id="registerLName" name="registerLName" type="text" placeholder="Your Last Name..." onBlur="registerNameCheck('L');" /></span>
+                            <span class="requiredInput"><input id="registerEmail" name="registerEmail" type="text" placeholder="Your Email..." onBlur="registerEmailCheck();" /></span>
+                            <span class="requiredInput"><input id="registerUsername" name="registerUsername" type="text" placeholder="Your Username..." onBlur="registerUsernameCheck();" /></span>
+                            <span class="requiredInput"><input id="registerPassword" name="registerPassword" type="password" placeholder="Your Password..." /></span>
+                            <span class="requiredInput"><input id="registerPasswordVerify" name="registerPasswordVerify" type="password" placeholder="Verify Your Password..." /></span>
+                            <input id="registerSubmit" name="registerSubmit" class="submit" type="submit" />
+                        </form>
+                    </div>
+                </div>
+                <div id="boxIndex4" class="boxWrapper">
+                    <div id="boxIndex4_Header"class="boxHeader">
+                        <span id="boxIndex4_Header_Date" class="boxHeaderDate"></span>
+                        <span id="boxIndex4_Header_User" class="boxHeaderUser">How does alpha testing help?</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndex4_Content" class="boxContent">
+                        Alpha testing allows for feedback to be gathered, and provides a testing environment. It enables the adding of features and the subtraction of others.
+                    </div>
+                </div>
+                <div id="boxIndex5" class="boxWrapper">
+                    <div id="boxIndex5_Header"class="boxHeader">
+                        <span id="boxIndex5_Header_Date" class="boxHeaderDate"></span>
+                        <span id="boxIndex5_Header_User" class="boxHeaderUser">How can I help?</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndex5_Content" class="boxContent">
+                        Currently the best way for you to help Boxes make it way into the world, is to simply use it. Feedback is always welcomed and useful! If you have suggestions, please don't be afraid to get your voice out!
+                    </div>
+                </div>
+                <noscript>
+                    <div id="boxIndex5" class="boxWrapper">
+                        <div id="boxIndex5_Header"class="boxHeader">
+                            <span id="boxIndex5_Header_Date" class="boxHeaderDate"></span>
+                            <span id="boxIndex5_Header_User" class="boxHeaderUser">JavaScript</span>
+                            <span class="clear_both"></span>
+                        </div>
+                        <div id="boxIndex5_Content" class="boxContent">
+                            Please enable JavaScript. Boxes is planned to work without JavaScript; however, it will work much smoother with JavaScript.<br /><br />During alpha testing support for features working without JavaScript will be minamal.
+                        </div>
+                    </div>
+                </noscript>
+            </div>
+            <div id="settings">
+                <a href="./">Boxes</a>
+                <a href="#Login">Login</a>
+                <a href="#Register">Register</a>
+                <a href="#boxIndex4">Alpha Testing???</a>
+                <a href="#boxIndex5">How Can I Help?</a>
+            </div>
+        </div>
     </body>
 </html>

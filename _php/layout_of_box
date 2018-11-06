@@ -1,0 +1,24 @@
+<div id="box1" class="boxWrapper">
+    <div id="box1_Header"class="boxHeader">
+        <span id="box1_Header_Date" class="boxHeaderDate">4/4/2014 19:35</span>
+        <span id="box1_Header_User" class="boxHeaderUser">Matthew Dooley</span>
+        <span class="clear_both"></span>
+    </div>
+    <div id="box1_Content" class="boxContent">
+        Hello World! This is the first post in Boxes! Although this post is manually written yours doesn't have to be! This is really really fun! I lost the game... I can see this turning into either a success or a failure, or maybe a bit of both lol! Lets simulate a enter sign.<br /><br />haha, I am going to have to find a more "airy" font to use inside of the posts. And a better more "boxy" font for the rest of the time!!! This is almost running out the box! (which is the goal) haha. Just one more line :D so close!!! :DDDD I am going to have to ad emjocon soonish aswell!
+    </div>
+    <div id="box1_Footer" class="boxFooter">
+        <div id="box1_Footer_Counts" class="boxFooterCounts">
+            <div id="box1_Footer_Counts_ShareCount_Div" class="boxCountsDiv"><span id="box1_Footer_ShareCount" class="boxShareCount">0</span></div>
+            <div id="box1_Footer_Counts_CommentCount_Div" class="boxCountsDiv"><span id="box1_Footer_CommentCount" class="boxCommentCount">0</span></div>
+            <div id="box1_Footer_Counts_LikeCount_Div" class="boxCountsDiv"><span id="box1_Footer_LikeCount" class="boxLikeCount">0</span></div>
+            <div class="clear_both"></div>
+        </div>
+        <div id="box1_Footer_Links" class="boxFooterLinks">
+            <a id="box1_Footer_ShareLink" class="boxShareLink" href="#Share">Share</a>
+            <a id="box1_Footer_CommentLink" class="boxCommentLink" href="#Comment">Comment</a>
+            <a id="box1_Footer_LikeLink" class="boxLikeLink" href="#Like" onClick="like('1');" >Like</a>
+            <span class="clear_both"></span>
+        </div>
+    </div>
+</div>

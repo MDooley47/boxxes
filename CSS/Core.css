@@ -1,0 +1,235 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    background-image: url('../images/background.png');
+    font-family: 'Nova Square', cursive;
+    }
+header {
+    width: 100%;
+    height: 55px;
+    padding-top: 5px;
+    background: rgba(255,255,255,.8);
+    box-shadow: 0px 8px 5px #555555;
+    position: fixed;
+    top: 0px;
+    text-align: center;
+    }
+header #htitle {
+    float: right;
+    margin-right: 5px;
+    }
+header #hSettings {
+    float: left;
+    margin-left: 5px;
+    }
+#searchBuddies {
+    height: 1.5em;
+    width: 190px;
+    font-family: 'Nova Square', cursive;
+    font-size: 16px;
+    margin-top: 10px;
+    background-color: rgba(255,255,255,0);
+    border: none;
+    color: #000000;
+    text-align: center;
+    }
+    #searchBuddies ::-webkit-input-placeholder {
+        color: #666666;
+        text-align: center;
+        }
+    
+    #searchBuddies :-moz-placeholder { /* Firefox 18- */
+        color: #666666;
+        text-align: center;
+        }
+    
+    #searchBuddies ::-moz-placeholder {  /* Firefox 19+ */
+        color: #666666;
+        text-align: center;
+        }
+    
+    #searchBuddies :-ms-input-placeholder {
+        color: #666666;
+        text-align: center;
+        }
+#article {
+    margin-top: 75px;
+    }
+#boxesGUILogo {
+    background-image: url('../images/boxesGUI.png');
+    height: 50px;
+    width: 50px;
+    }
+#boxesGUILink {
+    display: block;
+    height: 100%;
+    width: 100%;
+    }
+#hGear {
+    background-image: url('../images/gear.png');
+    height: 50px;
+    width: 50px;
+    }
+#hGearLink {
+    display: block;
+    height: 100%;
+    width: 100%;
+    }
+.boxWrapper {
+    width: 290px;
+    min-height: 240px;
+    margin: 0 auto;
+    margin-top: 1.2em;
+    background-color: #FFFFFF;
+    /*border: 5px solid #000000;*/
+    box-shadow: 0px 0px 10px #000000;
+    border-radius: 5px;
+    padding: 5px; /*allow for margin in child elements*/
+    }
+.boxContent {
+    width: 275px;
+    min-height: 225px;
+    margin: 0 auto;
+    margin-top: 7px;
+    font-family: 'Source Code Pro', Times;
+    text-align: left;
+    }
+.boxHeader {
+    height: 20px;
+    width: 100%;
+    }
+.boxHeaderDate {
+    float: left;
+    font-size: .7em;
+    color: #888888;
+    }
+.boxHeaderUser {
+    float: right;
+    }
+.boxFooter {
+    width: 288px;
+    margin: 0 auto;
+    margin-top: 5px;
+    }
+.boxFooterCounts span {
+    border: 1px solid rgba(50,50,50,.2);
+    border-bottom: none;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    padding: .3em .6em 0px .6em;
+    font-size: .8em;
+    font-family: 'Source Code Pro', Times;
+    }
+.boxCountsDiv {
+    float: left;
+    width: 95px;
+    text-align: center;
+    }
+.boxFooterLinks {
+    width: 288px;
+    margin: 0 auto;
+    border-top: 1px solid rgba(50,50,50,.2);
+    }
+.boxFooterLinks .boxPostLinks {
+    display: block;
+    float: left;
+    width: 95px;
+    height: 33px;
+    padding-top: 17px;
+    text-align: center;
+    border-right: 1px solid rgba(50,50,50,.2);
+    color: #000000;
+    text-decoration: none;
+    }
+.boxFooterLinks .boxPostLinks:first-of-type {
+    border-bottom-left-radius: 5px;
+    }
+.boxFooterLinks .boxPostLinks:last-of-type {
+    border: none;
+    border-bottom-right-radius: 5px;
+    }
+.boxFooterLinks .boxPostLinks:hover {
+    cursor: pointer;
+    }
+.boxFooterLinks .boxPostLinks:active {
+    background-color: #CCCCCC;
+    }
+#settings {
+    background-color: #FFFFFF;
+    width: 100%;
+    min-height: 60px;
+    margin-top: 1.5em;
+    box-shadow: 0px -2px 4px #555555;
+    }
+#settings a {
+    display: block;
+    width: 100%;
+    height: 35px;
+    border-bottom: 1px solid rgba(50,50,50,.4);
+    text-align: center;
+    padding-top: 20px;
+    color: #000000;
+    text-decoration: none;
+    }
+#settings a:last-of-type {
+    border-bottom: none;
+    }
+#settings  a:active {
+    background-color: #CCCCCC;
+    }
+/*GLOBALS*/
+.clear_both {
+    display: block;
+    clear: both;
+    }
+.submit:hover {
+    cursor: pointer;
+    }
+/***Login/Register***/
+#loginInputWrapper{
+    text-align: center;
+    padding-top: 40px;
+    }
+#registerInputWrapper {
+    text-align: center;
+    margin-top: -40px;
+    line-height: 12px;
+    }
+#Login input, #Register input {
+    height: 1.5em;
+    width: 190px;
+    font-family: 'Nova Square', cursive;
+    font-size: 16px;
+    margin-top: 10px;
+    background-color: rgba(255,255,255,0);
+    border: none;
+    color: #000000;
+    text-align: center;
+    }
+#Register input {
+    font-size: 12px;
+    }
+#Login ::-webkit-input-placeholder, #Register ::-webkit-input-placeholder {
+    color: #666666;
+    }
+#Login :-moz-placeholder, #Register :-moz-placeholder { /* Firefox 18- */
+    color: #666666;
+    }
+#Login ::-moz-placeholder, #Register ::-moz-placeholder {  /* Firefox 19+ */
+    color: #666666;
+    }
+#Login :-ms-input-placeholder, #Register :-ms-input-placeholder {
+    color: #666666;
+    }
+.requiredInput ::-webkit-input-placeholder {
+    color: #FF0000 !important;
+    }
+.requiredInput :-moz-placeholder { /* Firefox 18- */
+    color: #FF0000 !important;
+    }
+.requiredInput ::-moz-placeholder {  /* Firefox 19+ */
+    color: #FF0000 !important;
+    }
+.requiredInput :-ms-input-placeholder {
+    color: #FF0000 !important;
+    }
