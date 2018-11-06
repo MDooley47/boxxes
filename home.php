@@ -59,7 +59,7 @@
         
 		<!--<meta name="revisit-after" content="7 days" />
          <meta name="google-site-verification" content="" />-->
-        <?    if ($sessionON == false) echo '<meta http-equiv="refresh" content="0;URL=./" />'; ?>
+        <?    if (($sessionON == false) && ($GETuserID == null)) echo '<meta http-equiv="refresh" content="0;URL=./" />'; ?>
 
 
         <link rel="stylesheet" type="text/css" href="./CSS/Core.css" />
@@ -80,18 +80,58 @@
         <div id="wrapper">
             <header>
                 <span id="hSettings"><div id="hGear"><a id="hGearLink" href="#settings"></a></div></span>
-                <input id="searchBuddies" type="text" placeholder="Find your buddies..." />
+                <form id="searchBuddiesWrapper" action="./searchBuddies.php" method="POST">
+                    <input id="searchBuddies" name="searchBuddies" type="text" placeholder="Find your buddies..." />
+                </form>
                 <span id="htitle"><div id="boxesGUILogo"><a href="#top" id="boxesGUILink"></a></div></span>
                 <span class="clear_both"></span>
             </header>
             <div id="article">
+                <div id="search_output">
+                
+                </div>
+                <? if (($GETuserID == "") || ($userid == $GETuserID)) {
+                ?>
+                <div id="newPostBox" class="boxWrapper">
+                    <form id="newPostBox_wrapper" name="newPostBox_wrapper" action="./newPost.php" method="POST">
+                        <div id="newPostBox_Content" class="boxContent">
+                            <textarea id="newPostBox_input" name="newPostBox_input" type="textarea" placeholder="Write your post here!" rows="15"></textarea>
+                        </div>
+                        <div id="box1_Footer_Links" class="boxFooterLinks">
+                            <input type="text" style="display: none;" value="" name="postData" id="postData" />
+                            <input id="newPostBox_submit" type="submit" name="newPostBox_submit" value="Submit" />
+                        </div>
+                    </form>
+                </div>
                 <?
-                    include('./php/loadUserPosts.php');
+                    }
+                    $postArray = include('./_php/loadUserPostsArray.php');
+                    if ($postArray == "") { ?>
+                    <div id="box0" class="boxWrapper">
+                        <div id="box0_Header"class="boxHeader">
+                            <span id="box0_Header_Date" class="boxHeaderDate"></span>
+                            <span id="box0_Header_User" class="boxHeaderUser"></span>
+                            <span class="clear_both"></span>
+                        </div>
+                        <div id="box0_Content" class="boxContent">
+                            No posts to show yet!
+                        </div>
+                    </div> <? }
+                    else include('./php/loadUserPosts.php');
                 ?>
             </div>
             <div id="settings">
                 <a href="./">Boxes</a>
-                <a href="./Logout.php">Logout</a>
+                <? if ($sessionON != false) {
+                    ?><a href="./Logout.php">Logout</a>
+                    <?
+                    }
+                    else {
+                    ?>
+                    <a href="./#Login">Login</a>
+                    <?
+                        }
+                ?>
             </div>
         </div>
     </body>

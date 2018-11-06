@@ -1,20 +1,22 @@
 <?php
     //PHP Framework for Boxes //uv = uservariable //PV = Predetrimed UV - suchas ID
-
-    /*$runTHIS = $_POST['functionToRun'];
+    /*
+    $runTHIS = $_POST['functionToRun'];
     $argsToRun = split(', ', $_POST['argToRun']);
 
     #Run function via JS //DO NOT USE IN FINAL PRODUCT
     function runPost($toRun, $argsToRun) {
         call_user_func_array($toRun, $argsToRun);
-        }*/
+    }#*/
 
     //*********USERS - login logout************//
     //Very basic -- ones later functions use
     function mySQLConnect() {
         //establishes mySQL connection to the database
-        mysql_connect("matthews-mini","root","");
-        mysql_select_db("Boxes");
+        #mysql_connect("matthews-mini","root","");
+        #mysql_select_db("Boxes");
+        mysql_connect("localhost","root","24601Boxxes!");
+        mysql_select_db("Boxes_houseapp");
         }
 
     function isitEmail($email) {
@@ -186,26 +188,26 @@
         }
 
     function registerNewUser($firstName, $middleName, $lastName, $usernameUV, $userRealNameUV, $passwordUV, $passwordTwoUV, $emailUV) {
-        if (!isset($firstName)) echo "Please enter your first name.";
+        if (!isset($firstName)) return false;#echo "Please enter your first name.";
 
         #Middle name NOT requried.
 
-        else if (!isset($lastName)) echo "Please enter your last name.";
+        else if (!isset($lastName)) return false;#echo "Please enter your last name.";
         
-        else if (!isset($usernameUV)) echo "Please enter your username.";
+        else if (!isset($usernameUV)) return false;#echo "Please enter your username.";
 
-        else if (!isset($passwordUV)) echo "Please enter your password.";
+        else if (!isset($passwordUV)) return false;#echo "Please enter your password.";
 
-        else if (!isset($passwordTwoUV)) echo "Please confrim your password.";
+        else if (!isset($passwordTwoUV)) return false;#echo "Please confrim your password.";
 
-        else if (!isset($emailUV)) echo "Please enter your email.";
+        else if (!isset($emailUV)) return false;#echo "Please enter your email.";
         #Done checking for if set
         
-        else if (usernameCheck($usernameUV) == true) echo "Sorry sombody else already has that username.";
+        else if (usernameCheck($usernameUV) == true) return false;#echo "Sorry sombody else already has that username.";
 
-        else if (passwordMatch($passwordUV, $passwordTwoUV) == false) echo "Passwords do not match.";
+        else if (passwordMatch($passwordUV, $passwordTwoUV) == false) return false;#echo "Passwords do not match.";
 
-        else if (useremailCheck($emailUV) == true) echo "Sorry someone is already using that email."; #Recover password?
+        else if (useremailCheck($emailUV) == true) return false;#echo "Sorry someone is already using that email."; #Recover password?
 
         else {
             if (($userRealNameUV == true) || ($userRealNameUV == 1)) $userRealNameUV = true;
@@ -225,21 +227,24 @@
             mySQLConnect();
                 mysql_query("INSERT INTO users VALUES ('','$usernameUV', '$userRealNameUV','$passwordSet','$salt','$emailUV','0','$firstName','$middleName','$lastName','','','$dateTime')");
             mysql_close();
+            userLogin($usernameUV, $passwordUV);
+            return true;
             
             // createUserFileDir(userIDFind($usernameUV, 0));
             }
         }
 
     function newPost($userIDPV, $postContentPV) {
-        $postContentPV = mysql_real_escape_string(trim($postContentPV));
         mySQLConnect();
-            mysql_query("INSERT INTO posts VALUES ('', '$userIDPV', '0', '0', '', '0', '', '', '$postContentPV')");
+            $postContentPV = mysql_real_escape_string(trim($postContentPV));
+            $dateTime = currentDateTime();
+            mysql_query("INSERT INTO posts VALUES ('', '$userIDPV', '0', '0', '', '0', '', '', '$postContentPV','$dateTime')");
 
             $query = mysql_query("SELECT * FROM posts WHERE post='$postContentPV'");
             $numrows = mysql_num_rows($query);
             $row = mysql_fetch_assoc($query);
-            if (checkPostExists($postIDPV) == false) return "Error Status = -1";
             $dbid = $row['ID'];
+            if (checkPostExists($dbid) == false) return "Error Status = -1";
         mysql_close();
         userNewPost($userIDPV, $dbid);
         }
@@ -249,9 +254,10 @@
             $query = mysql_query("SELECT * FROM users WHERE ID='$userIDPV'");
             $numrows = mysql_num_rows($query);
             $row = mysql_fetch_assoc($query);
-            if (checkPostExists($postIDPV) == false) return "Error Status = -1";
+            if (checkPostExists($postID) == false) return "Error Status = -1";
             $dbposts = $row['Posts'];
-            $dbpostsNew = $dbposts . ',' . $postID;
+            if ($dbposts == '') $dbpostsNew = $postID;
+            else $dbpostsNew = $dbposts . ',' . $postID;
             if ($query = mysql_query("UPDATE users SET Posts='$dbpostsNew' WHERE ID='$userIDPV'")) return true;
         mysql_close();
         }
@@ -335,9 +341,53 @@
         if (file_exists($filename) == true) return true;
         else return false;
         }
+    
+    function searchBuddies($searchVal) {
+        $output = "";
+        mySQLConnect();
+        $searchKeywords = mysql_real_escape_string(htmlentities(trim($searchVal)));
+        if ($searchKeywords == "") exit();
+        
+        $where = null;
+        
+        $searchKeywords = preg_split('/[\s]+/', $searchKeywords);
+        
+        $searchKeywords_ammount = count($searchKeywords);
+        
+        foreach($searchKeywords as $key=>$keyword) {
+            $where .= "userName LIKE '%$keyword%'";
+            if ($key != ($searchKeywords_ammount - 1)) {
+                $where .= " AND ";
+                }
+            }
+        $mySQL_search = "SELECT * FROM users WHERE " . $where;
+        $query = mysql_query($mySQL_search);
+        $count = mysql_num_rows($query);
 
-       
-        #runPost($runTHIS, $argsToRun);
+        if($count == 0) {
+            $output = "";
+            }
+        else {
+            $i=0;
+            if ($count == 1) $output = "";
+            while($row = mysql_fetch_array($query)) {
+                $dbID = $row['ID'];
+                $dbuserName = $row['UserName'];
+                $dbfirstName = $row['firstName'];
+                $dbmiddleName = $row['middleName'];
+                $dblastName = $row['lastName'];
+                
+                if ($i == 0) $output .= $dbID . "_-_" . $dbuserName . "_-_" . $dbfirstName . "_-_" . $dbmiddleName . "_-_" . $dblastName;
+                else $output .= "-_-" . $dbID . "_-_" . $dbuserName . "_-_" . $dbfirstName . "_-_" . $dbmiddleName . "_-_" . $dblastName;
+                $i = $i+1;
+                }
+            }
+        echo $output;
+        mysql_close();
+        }
+    
+    
+    #runPost($runTHIS, $argsToRun);
 
     /*
      <!DOCTYPE html>

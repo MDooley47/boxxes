@@ -21,6 +21,7 @@ function getURLParam(sParam) {
         }
     }
 
+
 function like(postID) {
     $.post("./like.php", {"postID":postID}, function (data) { displayLike(data); });
     }
@@ -135,38 +136,12 @@ function registerEmailCheck() {
     else $("#registerEmail").css('box-shadow', '0px 0px 10px #FF0000');
     }
 
-function registerEmailCheckTF() {
-    emailInput = document.getElementById('registerEmail').value;
-    if (isThisAnEmail(emailInput) == true) return true;
-    else return false;
-    }
-
-function registerMe(yesORno) {
-    if ((yesORno == false) || (yesORno == "false")) {
-        registerNameCheck("F");
-        registerNameCheck("L");
-        $("#registerEmail").css('box-shadow', '0px 0px 10px #FF0000');
-        $("#registerUsername").css('box-shadow', '0px 0px 10px #FF0000');
-        $(".registerPassword").css('box-shadow', '0px 0px 10px #FF0000');
-        $("#registerWhatMightBeWrong").show();
-        }
-    else window.location.href = "./";
-    }
-
-function registerPasswordCheck() {
-    registerPassword = document.getElementById('registerPassword').value;
-    registerPasswordVerify = document.getElementById('registerPasswordVerify').value;
-    if ((registerPassword == '') || (registerPasswordVerify == '')) $(".registerPassword").css('box-shadow', '0px 0px 10px #FF0000');
-    else if (registerPassword == registerPasswordVerify) $(".registerPassword").css('box-shadow', 'none');
-    else $(".registerPassword").css('box-shadow', '0px 0px 10px #FF0000');
-    }
-
 function loggedIn(reallyTheyAre) {
     if ((reallyTheyAre == false) || (reallyTheyAre == "false")) {
         $("#loginUsername").css('box-shadow', '0px 0px 10px #FF0000');
         $("#loginPassword").css('box-shadow', '0px 0px 10px #FF0000');
         }
-    else window.location.href = "./";
+    else window.location.href = "./Home.php";
     }
 
 function refreshPuller() {
@@ -222,32 +197,10 @@ function isThisPostLoaded(ID) {
 function whoIsLoggedIn() {
     $.post("./php/whoIsThis.php", {}, function (data) { itIsI(data); });
     }
-
 function itIsI(whoIsThis) {
     whoIsThis = whoIsThis.split("*");
     window.userID = whoIsThis[0];
     window.userName = whoIsThis[1];
-    }
-
-function displaySearch(errorStatus) {
-    errorStatus
-    $("#search_output").html('');
-    if (errorStatus == "") {
-        $("#search_output").hide();
-        }
-    else {
-        errorStatusSplit = errorStatus.split('-_-');
-        i = 0;
-        while (i < errorStatusSplit.length) {
-            console.log(errorStatusSplit.length + ' > ' + i);
-            currentResults = $("#search_output").html();
-            output = errorStatusSplit[i].split('_-_');
-            formatedOutput = '<a id="searchResult_' + output[0] + '" ' + 'class="searchResults"' + ' href="./Home.php?userID=' + output[0] + '">' + output[1] + '</a>';
-            $("#search_output").html(currentResults + formatedOutput).show();
-            i++;
-            }
-        }
-
     }
 
 function isThisAnEmail(email) {

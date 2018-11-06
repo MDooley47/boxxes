@@ -6,7 +6,6 @@
     $username = $_SESSION['username'];
     if ((!$userid) || ($userid == null)) $sessionON = false;
     else $sessionON = true;
-    
     ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +50,7 @@
 
 		<!--<meta name="revisit-after" content="7 days" />
         <meta name="google-site-verification" content="" />-->
-        <?    if ($sessionON == true) echo '<meta http-equiv="refresh" content="0;URL=./Home.php" />'; ?>
+        <?    if ($sessionON == true) echo '<meta http-equiv="refresh" content="0;URL=./Home.php?userID=' . $userid . '" />'; ?>
         
         
         <link rel="stylesheet" type="text/css" href="./CSS/Core.css" />
@@ -69,11 +68,16 @@
         <div id="wrapper">
             <header>
                     <span id="hSettings"><div id="hGear"><a id="hGearLink" href="#settings"></a></div></span>
-                    <input id="searchBuddies" type="text" placeholder="Find your buddies..." />
+                    <form id="searchBuddiesWrapper" action="./searchBuddies.php" method="POST">
+                        <input id="searchBuddies" name="searchBuddies" type="text" placeholder="Find your buddies..." />
+                    </form>
                     <span id="htitle"><div id="boxesGUILogo"><a href="#top" id="boxesGUILink"></a></div></span>
                     <span class="clear_both"></span>
             </header>
             <div id="article">
+                <div id="search_output">
+                    
+                </div>
                 <div id="boxIndex1" class="boxWrapper">
                     <div id="boxIndex1_Header"class="boxHeader">
                         <span id="boxIndex1_Header_Date" class="boxHeaderDate"></span>
@@ -81,7 +85,9 @@
                         <span class="clear_both"></span>
                     </div>
                     <div id="boxIndex1_Content" class="boxContent">
-                        Hello! It is wonderful to see you here!<br /><br />Boxes is currently is alpha testing. Which means that you have a chance to directly effect its future! Suggest ideas and give feedback! The more you use Boxes now; the better it can get!
+                        Hello! It is wonderful to see you here!
+                        <br /><br />
+                        Boxes is currently is alpha testing. Which means that you have a chance to directly effect its future! Suggest ideas and give feedback! The more you use Boxes now; the better it can get!
                     </div>
                 </div>
                 <div id="Login" class="boxWrapper">
@@ -94,7 +100,7 @@
                         <form id="loginInputWrapper" action="./Login.php" method="POST">
                             <input id="loginUsername" name="loginUsername" type="text" placeholder="Your Username..." />
                             <input id="loginPassword" name="loginPassword" type="password" placeholder="Your Password..." />
-                            <input id="loginSubmit" name="loginSubmit" class="submit" type="submit" />
+                            <input id="loginSubmit" name="loginSubmit" class="submit" type="submit" value="Submit" />
                         </form>
                     </div>
                 </div>
@@ -111,10 +117,23 @@
                             <span class="requiredInput"><input id="registerLName" name="registerLName" type="text" placeholder="Your Last Name..." onBlur="registerNameCheck('L');" /></span>
                             <span class="requiredInput"><input id="registerEmail" name="registerEmail" type="text" placeholder="Your Email..." onBlur="registerEmailCheck();" /></span>
                             <span class="requiredInput"><input id="registerUsername" name="registerUsername" type="text" placeholder="Your Username..." onBlur="registerUsernameCheck();" /></span>
-                            <span class="requiredInput"><input id="registerPassword" name="registerPassword" type="password" placeholder="Your Password..." /></span>
-                            <span class="requiredInput"><input id="registerPasswordVerify" name="registerPasswordVerify" type="password" placeholder="Verify Your Password..." /></span>
-                            <input id="registerSubmit" name="registerSubmit" class="submit" type="submit" />
+                            <span class="requiredInput"><input id="registerPassword" name="registerPassword" type="password" placeholder="Your Password..." class="registerPassword" /></span>
+                            <span class="requiredInput"><input id="registerPasswordVerify" name="registerPasswordVerify" type="password" placeholder="Verify Your Password..." class="registerPassword" onBlur="registerPasswordCheck();" /></span>
+                            <input id="registerSubmit" name="registerSubmit" class="submit" type="submit" value="Submit" />
                         </form>
+                        <div id="registerWhatMightBeWrong" style="display: none;">
+                            If you are rejected it may for any or all of the highlighted fields.
+                        </div>
+                    </div>
+                </div>
+                <div id="Videos" class="boxWrapper">
+                    <div id="boxIndexVideos_Header">
+                        <span id="boxIndexVideos_Header_Date" class="boxHeaderDate"><small>Currently only the development<br /> video is done. (Max:60s)</small></span>
+                        <span id="boxIndexVideos_Header_User" class="boxHeaderUser">House App Videos</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndexVideos_Content" class="boxContent">
+                        <iframe width="100%" height="200px" src="//www.youtube.com/embed/2rFK9gX4yVg?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
                 <div id="boxIndex4" class="boxWrapper">
@@ -138,22 +157,35 @@
                     </div>
                 </div>
                 <noscript>
-                    <div id="boxIndex5" class="boxWrapper">
-                        <div id="boxIndex5_Header"class="boxHeader">
-                            <span id="boxIndex5_Header_Date" class="boxHeaderDate"></span>
-                            <span id="boxIndex5_Header_User" class="boxHeaderUser">JavaScript</span>
+                    <div id="boxIndexJX" class="boxWrapper">
+                        <div id="boxIndexJX_Header"class="boxHeader">
+                            <span id="boxIndexJX_Header_Date" class="boxHeaderDate"></span>
+                            <span id="boxIndexJX_Header_User" class="boxHeaderUser">JavaScript</span>
                             <span class="clear_both"></span>
                         </div>
-                        <div id="boxIndex5_Content" class="boxContent">
+                        <div id="boxIndexJX_Content" class="boxContent">
                             Please enable JavaScript. Boxes is planned to work without JavaScript; however, it will work much smoother with JavaScript.<br /><br />During alpha testing support for features working without JavaScript will be minamal.
                         </div>
                     </div>
                 </noscript>
+                <div id="boxIndex6" class="boxWrapper">
+                    <div id="boxIndex6_Header" class="boxHeader">
+                        <span id="boxIndex6_Header_Date" class="boxHeaderDate"></span>
+                        <span id="boxIndex6_Header_User" class="boxHeaderUser">Please Note:</span>
+                        <span class="clear_both"></span>
+                    </div>
+                    <div id="boxIndex6_Content" class="boxContent">
+                        You are using the subdomain set aside for the House App Challenge. This means that security will drop. And nothing you post here will necessarily make it way to the public version!
+                        <br />
+                        Please use with the understanding that this is still very much in development and I take no responsibility for any loss of information. WARNING: Privacy measures are not yet in place! Anybody with your userID can view your posts!
+                    </div>
+                </div>
             </div>
             <div id="settings">
                 <a href="./">Boxes</a>
                 <a href="#Login">Login</a>
                 <a href="#Register">Register</a>
+                <a href="#Videos">Videos</a>
                 <a href="#boxIndex4">Alpha Testing???</a>
                 <a href="#boxIndex5">How Can I Help?</a>
             </div>

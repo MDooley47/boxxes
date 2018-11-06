@@ -1,0 +1,22 @@
+#article {
+    text-align: center;
+    }
+.boxWrapper {
+    display: inline-block;
+    margin-left: 2.5em;
+    margin-right: 2.5em;
+    vertical-align: top;
+    }
+.boxWrapper:first-of-type {
+    margin-top: 1.2em;
+    }
+#settings {
+    text-align: justify;
+    }
+#settings a {
+    display: inline-block;
+    width: 49%;
+    }
+#settings a:last-of-type {
+    border-bottom: 1px solid rgba(50,50,50,.4);
+    }

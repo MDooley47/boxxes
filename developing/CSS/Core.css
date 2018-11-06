@@ -13,7 +13,6 @@ header {
     position: fixed;
     top: 0px;
     text-align: center;
-    z-index: 2;
     }
 header #htitle {
     float: right;
@@ -22,9 +21,6 @@ header #htitle {
 header #hSettings {
     float: left;
     margin-left: 5px;
-    }
-#searchBuddiesWrapper {
-    display: inline;
     }
 #searchBuddies {
     height: 1.5em;
@@ -56,31 +52,6 @@ header #hSettings {
         color: #666666;
         text-align: center;
         }
-#search_output {
-    display: none;
-    margin-top: -15px;
-    position: fixed;
-    width: 100%;
-    background-color: #FFFFFF;
-    text-align: center;
-    font-size: 1.2em;
-    }
-.searchResults {
-    display: block;
-    width: 100%;
-    height: 35px;
-    border-bottom: 1px solid rgba(50,50,50,.4);
-    text-align: center;
-    padding-top: 18px;
-    color: #000000;
-    text-decoration: none;
-    }
-.searchResults:last-of-type {
-    border-bottom: none;
-    }
-.searchResults:active {
-    background-color: #CCCCCC;
-    }
 #article {
     margin-top: 75px;
     }
@@ -183,27 +154,6 @@ header #hSettings {
 .boxFooterLinks .boxPostLinks:active {
     background-color: #CCCCCC;
     }
-#newPostBox_submit {
-    display: block;
-    width: 100%;
-    height: 33px;
-    padding-top: 10px;
-    text-align: center;
-    color: #000000;
-    text-decoration: none;
-    border: none;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    background-color: rgba(255,255,255,.0);
-    font-family: 'Nova Square', cursive;
-    font-size: 16px;
-    }
-#newPostBox_submit:hover {
-    cursor: pointer;
-    }
-#newPostBox_submit:active {
-    background-color: #CCCCCC;
-    }
 #settings {
     background-color: #FFFFFF;
     width: 100%;
@@ -242,7 +192,7 @@ header #hSettings {
     }
 #registerInputWrapper {
     text-align: center;
-    margin-top: -20px;
+    margin-top: -40px;
     line-height: 12px;
     }
 #Login input, #Register input {
@@ -282,13 +232,4 @@ header #hSettings {
     }
 .requiredInput :-ms-input-placeholder {
     color: #FF0000 !important;
-    }
-#newPostBox_input {
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-    border: none;
-    resize: none;
-    font-family: 'Source Code Pro', Times;
-    font-size: .9em;
     }
